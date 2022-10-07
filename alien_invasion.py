@@ -2,6 +2,7 @@ import sys
 
 import pygame
 
+from bullet import Bullet
 from settings import Settings
 from ship import Ship
 
@@ -23,6 +24,7 @@ class AlienInvasion:
 
         pygame.display.set_caption("Alien Invasion")
         self.ship = Ship(self)
+        self.bullets = pygame.sprite.Group()
 
     def run_game(self):
         """Start main game loop"""
@@ -31,7 +33,12 @@ class AlienInvasion:
             """waiting for press key or mouse click"""
             self._check_events()
             self.ship.update()
+            self._update_bullets()
             self._update_screen()
+
+            """ delete bullets beyond screen, use self.bullets.copy() 
+            because in loop in python cant delete base array,
+             but base on this remove from original list """
 
     def _check_events(self):
         """reaction for even from mouse or keyboard"""
@@ -51,6 +58,8 @@ class AlienInvasion:
             self.ship.moving_left = True
         elif event.key == pygame.K_q:
             sys.exit()
+        elif event.key == pygame.K_SPACE:
+            self._fire_bullet(event)
 
     def _check_keyup_events(self, event):
         """reaction for release key"""
@@ -59,11 +68,26 @@ class AlienInvasion:
         elif event.key == pygame.K_LEFT:
             self.ship.moving_left = False
 
+    def _fire_bullet(self, event):
+        """creating new bullet and add to group bullets """
+        if len(self.bullets) < self.settings.bullets_allowed:
+            new_bullet = Bullet(self)
+            self.bullets.add(new_bullet)
+
+    def _update_bullets(self):
+        """Actualization bullets positions and delete invisible bullets on screen"""
+        self.bullets.update()
+
+        for bullet in self.bullets.copy():
+            if bullet.rect.bottom <= 0:
+                self.bullets.remove(bullet)
+
     def _update_screen(self):
         """refresh screen during loop iteration"""
         self.screen.fill(self.settings.bg_color)
         self.ship.blitime()
-
+        for bullet in self.bullets.sprites():
+            bullet.draw_bullet()
         """display last modify screen"""
         pygame.display.flip()
 
