@@ -1,3 +1,3 @@
 # Alien-invasion
 
-Based on "Python Instrukcja dla programisty" book authors Eric Matthes
+Based on " Python Crash Course A Hands On Project Based Introduction to Programming No Starch Press" book written by Eric Matthes
